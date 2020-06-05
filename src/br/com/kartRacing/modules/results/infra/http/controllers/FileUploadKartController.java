@@ -13,6 +13,8 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import br.com.kartRacing.modules.results.services.KartRacingService;
+
 /**
  * 
  * Class responsible for handling information that comes from Servlet
@@ -28,7 +30,6 @@ public class FileUploadKartController {
 	 * @param response
 	 */
 	public void readTextFileUpload(HttpServletRequest request, HttpServletResponse response) {
-		String file_name = null;
 		response.setContentType("text/html");
 		
 		boolean isMultipartContent = ServletFileUpload.isMultipartContent(request);
@@ -42,16 +43,12 @@ public class FileUploadKartController {
 		try {
 			List < FileItem > fields = upload.parseRequest(request);
 			Iterator < FileItem > it = fields.iterator();
-			ArrayList<String> result = new ArrayList<String>();
 			if (!it.hasNext()) {
 				return;
 			}
-			while (it.hasNext()) {
-				FileItem fileItem = it.next();
-				file_name = fileItem.getName();
-				result.add(file_name);
-			}
-			request.setAttribute("result", result);
+			
+			ArrayList<String> resultList = KartRacingService.resultKartRace(it);
+			request.setAttribute("result", resultList);
 
 		    RequestDispatcher view = request.getRequestDispatcher("index.jsp");
 		    view.forward(request, response);
