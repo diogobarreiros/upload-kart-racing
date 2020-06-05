@@ -8,6 +8,7 @@ import org.apache.commons.fileupload.FileItem;
 import br.com.kartRacing.modules.results.infra.enums.LapEnum;
 import br.com.kartRacing.modules.results.infra.enums.PilotEnum;
 import br.com.kartRacing.shared.infra.data.entities.Lap;
+import br.com.kartRacing.shared.infra.data.entities.Pilot;
 
 /**
  * Class responsible for the result of the kart racing
@@ -36,9 +37,10 @@ public class KartRacingService {
 				}
 				
 				ArrayList<Lap> laps = fillLaps(lines);
+				ArrayList<Pilot> pilots = fillPilots(lines, laps);
 				
-				for (int i = 0; i < laps.size(); i++) {
-					resultList.add(laps.get(i).getHour());
+				for (int i = 0; i < pilots.size(); i++) {
+					resultList.add(pilots.get(i).getName());
 				}
 			}
 		}catch (Exception e) {
@@ -50,7 +52,7 @@ public class KartRacingService {
 	/**
 	 * Method responsible for filling lap
 	 * @param lines
-	 * @return
+	 * @return List Laps
 	 */
 	public static ArrayList<Lap> fillLaps(String[] lines) {
 		ArrayList<Lap> laps = new ArrayList<Lap>();
@@ -65,10 +67,49 @@ public class KartRacingService {
 			lap.setHour(values[LapEnum.HOUR.getValue()]);
 			lap.setNumber(Integer.parseInt(values[LapEnum.NUMBER.getValue()]));
 			lap.setTime(values[LapEnum.TIME.getValue()]);
+			lap.setAverageSpeed(Float.parseFloat(values[LapEnum.AVERAGESPEED.getValue()].replaceAll(",", ".")));
 			
 			laps.add(lap);
 		}
 
 		return laps;
+	}
+	
+	/**
+	 * Method responsible for filling pilot
+	 * @param lines
+	 * @return List Pilots
+	 */
+	public static ArrayList<Pilot> fillPilots(String[] lines, ArrayList<Lap> laps) {
+		ArrayList<Pilot> pilots = new ArrayList<Pilot>();
+		boolean pilotExists = false;
+
+		for (int i = 1; i < lines.length; i++) {
+			String line = lines[i];
+
+			String[] values = line.split(" ");
+
+			Pilot pilotAdd = new Pilot();
+			pilotAdd.setCode(Integer.parseInt(values[PilotEnum.CODE.getValue()]));
+			pilotAdd.setName(values[PilotEnum.NAME.getValue()]);
+			
+			for (Pilot pilot : pilots) {
+				if(pilot.getCode() == pilotAdd.getCode())
+					pilotExists = true;
+			}
+			
+			if(!pilotExists) {
+				ArrayList<Lap> pilotLaps = new ArrayList<Lap>();
+				for (Lap lap : laps) {
+					if(lap.getPilotCode() == pilotAdd.getCode()) {
+						pilotLaps.add(lap);
+					}
+				}
+				pilotAdd.setLaps(pilotLaps);
+				pilots.add(pilotAdd);
+			}
+		}
+
+		return pilots;
 	}
 }
