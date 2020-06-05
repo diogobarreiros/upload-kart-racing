@@ -16,7 +16,7 @@ public class KartRacingService {
 	/**
 	 * Method responsible for returning the result of kart racing
 	 * @param it
-	 * @return Result Kart Racing
+	 * @return Result List Kart Racing
 	 */
 	public static ArrayList<String> resultKartRace(Iterator<FileItem> it){
 		ArrayList<String> resultList = new ArrayList<String>();
