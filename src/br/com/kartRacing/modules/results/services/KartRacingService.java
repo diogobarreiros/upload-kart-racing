@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItem;
 
+import br.com.kartRacing.modules.results.infra.enums.PilotEnum;
+
 /**
  * Class responsible for the result of the kart racing
  * 
@@ -24,13 +26,17 @@ public class KartRacingService {
 			while (it.hasNext()) {
 				FileItem fileItem = it.next();
 				String textFile = fileItem.getString("UTF-8");
+				textFile = textFile.replaceAll("\r", "");
 				
 				String[] lines = textFile.split("\n");
-				if(!lines[0].equals("Hora Piloto No Volta Tempo Volta Velocidade média da volta\r")) {
+				if(!lines[0].equals("Hora Piloto No Volta Tempo Volta Velocidade média da volta")) {
 					throw new Exception("Arquivo inválido");
 				}
 				for (int i = 1; i < lines.length; i++) {
-					resultList.add(lines[i]);
+					String line = lines[i];
+					
+					String[] values = line.split(" ");
+					resultList.add(values[PilotEnum.CODE.getValue()]);
 				}
 			}
 		}catch (Exception e) {
