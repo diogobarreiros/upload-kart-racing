@@ -20,10 +20,21 @@ public class KartRacingService {
 	 */
 	public static ArrayList<String> resultKartRace(Iterator<FileItem> it){
 		ArrayList<String> resultList = new ArrayList<String>();
-		while (it.hasNext()) {
-			FileItem fileItem = it.next();
-			String file_name = fileItem.getName();
-			resultList.add(file_name);
+		try {
+			while (it.hasNext()) {
+				FileItem fileItem = it.next();
+				String textFile = fileItem.getString("UTF-8");
+				
+				String[] lines = textFile.split("\n");
+				if(!lines[0].equals("Hora Piloto No Volta Tempo Volta Velocidade média da volta\r")) {
+					throw new Exception("Arquivo inválido");
+				}
+				for (int i = 1; i < lines.length; i++) {
+					resultList.add(lines[i]);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return resultList;
 	}
