@@ -27,8 +27,8 @@ public class KartRacingService {
 	 * @param it
 	 * @return Result List Kart Racing
 	 */
-	public static ArrayList<String> resultKartRace(Iterator<FileItem> it){
-		ArrayList<String> resultList = new ArrayList<String>();
+	public static ArrayList<Result> resultKartRace(Iterator<FileItem> it){
+		ArrayList<Result> resultList = new ArrayList<Result>();
 		try {
 			while (it.hasNext()) {
 				FileItem fileItem = it.next();
@@ -42,11 +42,7 @@ public class KartRacingService {
 				
 				ArrayList<Lap> laps = fillLaps(lines);
 				ArrayList<Pilot> pilots = fillPilots(lines, laps);
-				ArrayList<Result> results = fillResults(pilots);
-				
-				for (int i = 0; i < results.size(); i++) {
-					resultList.add(results.get(i).getTimeAfterWinner());
-				}
+				resultList = fillResults(pilots);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

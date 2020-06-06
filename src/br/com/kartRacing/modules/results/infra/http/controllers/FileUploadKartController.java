@@ -13,6 +13,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import br.com.kartRacing.modules.results.infra.data.entities.Result;
 import br.com.kartRacing.modules.results.services.KartRacingService;
 
 /**
@@ -39,18 +40,18 @@ public class FileUploadKartController {
 		
 		FileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);
+		RequestDispatcher view = request.getRequestDispatcher("index.jsp");
 		
 		try {
 			List < FileItem > fields = upload.parseRequest(request);
 			Iterator < FileItem > it = fields.iterator();
 			if (!it.hasNext()) {
-				return;
+				throw new Exception("Arquivo não encontrado");
 			}
 			
-			ArrayList<String> resultList = KartRacingService.resultKartRace(it);
+			ArrayList<Result> resultList = KartRacingService.resultKartRace(it);
 			request.setAttribute("result", resultList);
 
-		    RequestDispatcher view = request.getRequestDispatcher("index.jsp");
 		    view.forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
