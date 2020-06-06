@@ -1,5 +1,7 @@
 package br.com.kartRacing.shared.infra.data.entities;
 
+import java.time.LocalTime;
+
 /**
  * 
  * @author diogo
@@ -11,6 +13,7 @@ public class Lap {
 	private String hour;
 	private int number;
 	private String time;
+	private LocalTime localTime;
 	private float averageSpeed;
 	
 	public int getPilotCode() {
@@ -36,6 +39,12 @@ public class Lap {
 	}
 	public void setTime(String time) {
 		this.time = time;
+	}
+	public LocalTime getLocalTime() {
+		return localTime;
+	}
+	public void setLocalTime(LocalTime localTime) {
+		this.localTime = localTime;
 	}
 	public float getAverageSpeed() {
 		return averageSpeed;

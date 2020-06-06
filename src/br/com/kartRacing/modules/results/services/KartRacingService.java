@@ -1,14 +1,18 @@
 package br.com.kartRacing.modules.results.services;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItem;
 
+import br.com.kartRacing.modules.results.infra.data.entities.Result;
 import br.com.kartRacing.modules.results.infra.enums.LapEnum;
 import br.com.kartRacing.modules.results.infra.enums.PilotEnum;
 import br.com.kartRacing.shared.infra.data.entities.Lap;
 import br.com.kartRacing.shared.infra.data.entities.Pilot;
+import br.com.kartRacing.shared.utils.LocalTimeUtils;
 
 /**
  * Class responsible for the result of the kart racing
@@ -38,9 +42,10 @@ public class KartRacingService {
 				
 				ArrayList<Lap> laps = fillLaps(lines);
 				ArrayList<Pilot> pilots = fillPilots(lines, laps);
+				ArrayList<Result> results = fillResults(pilots);
 				
-				for (int i = 0; i < pilots.size(); i++) {
-					resultList.add(pilots.get(i).getName());
+				for (int i = 0; i < results.size(); i++) {
+					resultList.add(String.valueOf(results.get(i).getPosition()));
 				}
 			}
 		}catch (Exception e) {
@@ -67,6 +72,7 @@ public class KartRacingService {
 			lap.setHour(values[LapEnum.HOUR.getValue()]);
 			lap.setNumber(Integer.parseInt(values[LapEnum.NUMBER.getValue()]));
 			lap.setTime(values[LapEnum.TIME.getValue()]);
+			lap.setLocalTime(LocalTimeUtils.formatTime(lap.getTime()));
 			lap.setAverageSpeed(Float.parseFloat(values[LapEnum.AVERAGESPEED.getValue()].replaceAll(",", ".")));
 			
 			laps.add(lap);
@@ -111,5 +117,44 @@ public class KartRacingService {
 		}
 
 		return pilots;
+	}
+	
+	/**
+	 * Method responsible for filling result
+	 * @param pilots
+	 * @return List Result
+	 */
+	public static ArrayList<Result> fillResults(ArrayList<Pilot> pilots) {
+		ArrayList<Result> results = new ArrayList<Result>();
+		
+		for (Pilot pilot : pilots) {
+			Result result = new Result();
+			result.setPilotCode(pilot.getCode());
+			result.setPilotName(pilot.getName());
+			result.setNumberLaps(pilot.getLaps().size());
+			
+			LocalTime timeSum = null;
+			for (Lap lap : pilot.getLaps()) {
+				LocalTime localTime = lap.getLocalTime();
+				if(timeSum == null)
+					timeSum = localTime;
+				else
+					timeSum = timeSum.plusMinutes(localTime.getMinute())
+					                 .plusSeconds(localTime.getSecond())
+					                 .plusNanos(localTime.getNano());
+			}
+			result.setTrialLocalTime(timeSum);
+			result.setTrialTime(timeSum.format(DateTimeFormatter.ofPattern("mm:ss.nnnnnnn")));
+			
+			results.add(result);
+		}
+		
+		results.sort((p1, p2) -> p1.getTrialLocalTime().compareTo(p2.getTrialLocalTime()));
+		
+		for (int i = 0; i < results.size(); i++) {
+			results.get(i).setPosition(i + 1);
+		}
+		
+		return results;
 	}
 }

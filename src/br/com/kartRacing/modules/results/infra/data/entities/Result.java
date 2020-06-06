@@ -1,5 +1,7 @@
 package br.com.kartRacing.modules.results.infra.data.entities;
 
+import java.time.LocalTime;
+
 /**
  * 
  * @author diogo
@@ -12,6 +14,7 @@ public class Result {
 	private int position;
 	private int numberLaps;
 	private String trialTime;
+	private LocalTime trialLocalTime;
 	
 	public int getPilotCode() {
 		return pilotCode;
@@ -42,5 +45,11 @@ public class Result {
 	}
 	public void setTrialTime(String trialTime) {
 		this.trialTime = trialTime;
+	}
+	public LocalTime getTrialLocalTime() {
+		return trialLocalTime;
+	}
+	public void setTrialLocalTime(LocalTime trialLocalTime) {
+		this.trialLocalTime = trialLocalTime;
 	}
 }
