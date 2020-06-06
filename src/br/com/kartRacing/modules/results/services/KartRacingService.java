@@ -45,7 +45,7 @@ public class KartRacingService {
 				ArrayList<Result> results = fillResults(pilots);
 				
 				for (int i = 0; i < results.size(); i++) {
-					resultList.add(String.valueOf(results.get(i).getPosition()));
+					resultList.add(results.get(i).getTimeAfterWinner());
 				}
 			}
 		}catch (Exception e) {
@@ -111,6 +111,7 @@ public class KartRacingService {
 						pilotLaps.add(lap);
 					}
 				}
+				pilotLaps.sort((p1, p2) -> p1.getLocalTime().compareTo(p2.getLocalTime()));
 				pilotAdd.setLaps(pilotLaps);
 				pilots.add(pilotAdd);
 			}
@@ -134,15 +135,19 @@ public class KartRacingService {
 			result.setNumberLaps(pilot.getLaps().size());
 			
 			LocalTime timeSum = null;
+			float averageSpeedSum = 0;
 			for (Lap lap : pilot.getLaps()) {
 				LocalTime localTime = lap.getLocalTime();
-				if(timeSum == null)
+				if(timeSum == null) {
 					timeSum = localTime;
-				else
+					result.setBestLap(lap);
+				}else
 					timeSum = timeSum.plusMinutes(localTime.getMinute())
 					                 .plusSeconds(localTime.getSecond())
 					                 .plusNanos(localTime.getNano());
+				averageSpeedSum += lap.getAverageSpeed();
 			}
+			result.setAverageSpeedPilot(averageSpeedSum/pilot.getLaps().size());
 			result.setTrialLocalTime(timeSum);
 			result.setTrialTime(timeSum.format(DateTimeFormatter.ofPattern("mm:ss.nnnnnnn")));
 			
@@ -152,7 +157,17 @@ public class KartRacingService {
 		results.sort((p1, p2) -> p1.getTrialLocalTime().compareTo(p2.getTrialLocalTime()));
 		
 		for (int i = 0; i < results.size(); i++) {
-			results.get(i).setPosition(i + 1);
+			Result result = results.get(i);
+			result.setPosition(i + 1);
+			
+			LocalTime timeAfterWinner = results.get(0).getTrialLocalTime();
+			LocalTime timeSub = LocalTime.of(
+					00,
+					result.getTrialLocalTime().minusMinutes(timeAfterWinner.getMinute()).getMinute(),
+					result.getTrialLocalTime().minusSeconds(timeAfterWinner.getSecond()).getSecond(),
+					result.getTrialLocalTime().minusNanos(timeAfterWinner.getNano()).getNano()
+					);
+			result.setTimeAfterWinner(timeSub.format(DateTimeFormatter.ofPattern("mm:ss.nnnnnnnnn")));
 		}
 		
 		return results;

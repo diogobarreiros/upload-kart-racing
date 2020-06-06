@@ -2,6 +2,8 @@ package br.com.kartRacing.modules.results.infra.data.entities;
 
 import java.time.LocalTime;
 
+import br.com.kartRacing.shared.infra.data.entities.Lap;
+
 /**
  * 
  * @author diogo
@@ -15,6 +17,9 @@ public class Result {
 	private int numberLaps;
 	private String trialTime;
 	private LocalTime trialLocalTime;
+	private Lap bestLap;
+	private float averageSpeedPilot;
+	private String timeAfterWinner;
 	
 	public int getPilotCode() {
 		return pilotCode;
@@ -51,5 +56,23 @@ public class Result {
 	}
 	public void setTrialLocalTime(LocalTime trialLocalTime) {
 		this.trialLocalTime = trialLocalTime;
+	}
+	public Lap getBestLap() {
+		return bestLap;
+	}
+	public void setBestLap(Lap bestLap) {
+		this.bestLap = bestLap;
+	}
+	public float getAverageSpeedPilot() {
+		return averageSpeedPilot;
+	}
+	public void setAverageSpeedPilot(float averageSpeedPilot) {
+		this.averageSpeedPilot = averageSpeedPilot;
+	}
+	public String getTimeAfterWinner() {
+		return timeAfterWinner;
+	}
+	public void setTimeAfterWinner(String timeAfterWinner) {
+		this.timeAfterWinner = timeAfterWinner;
 	}
 }
